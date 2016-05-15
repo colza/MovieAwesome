@@ -10,13 +10,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.kun.movieisawesome.dummy.DummyContent;
-import com.kun.movieisawesome.model.ModelMovie;
+import com.kun.movieisawesome.model.ModelPeople;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity
                 String result = response.body().string();
                 try {
                     JSONObject jsonObject = new JSONObject(result);
-                    String imageConfig = jsonObject.getJSONObject("images").toString();
+                    String imageConfig = jsonObject.getJSONObject(Constants.RESP_JSON_KEY_IMAGES).toString();
                     PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(Constants.PREF_CONFIG_IMAGE, imageConfig).commit();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -122,8 +121,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-            String className = ModelMovie.class.getName();
-            Log.i("LOG","class name = " + className);
+//            String className = ModelMovie.class.getName();
+//            String className = ModelTV.class.getName();
+            String className = ModelPeople.class.getName();
             ItemFragment itemFragment = ItemFragment.newInstance(className);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment).commit();
         } else if (id == R.id.nav_slideshow) {

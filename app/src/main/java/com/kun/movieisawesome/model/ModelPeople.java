@@ -1,5 +1,7 @@
 package com.kun.movieisawesome.model;
 
+import com.kun.movieisawesome.Constants;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,6 +216,11 @@ public class ModelPeople extends ModelGeneral{
     @Override
     public String getShowSubtitle() {
         return getName();
+    }
+
+    @Override
+    public String getRequestUrl() {
+        return Constants.BASE_URL + Constants.CATE_PERSON + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
     }
 
     @Override

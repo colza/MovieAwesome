@@ -42,6 +42,8 @@ public class ItemFragment<T> extends Fragment {
     private static final String ARG_MODEL_CLASS_NAME = "modelClassName";
     // TODO: Customize parameters
     private String mModelClassName;
+    private Class<?> mModelClass;
+    private String mReqUrl;
     private OnListFragmentInteractionListener mListener;
     private ModelConfigImage modelConfigImage;
 
@@ -68,6 +70,23 @@ public class ItemFragment<T> extends Fragment {
 
         if (getArguments() != null) {
             mModelClassName = getArguments().getString(ARG_MODEL_CLASS_NAME);
+        }
+
+        if( mModelClassName != null){
+            try {
+                mModelClass = Class.forName(mModelClassName);
+                if( mModelClass != null ){
+                    Object object = mModelClass.newInstance();
+                    if( object instanceof ModelGeneral)
+                        mReqUrl= ((ModelGeneral)object).getRequestUrl();
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (java.lang.InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
         if( modelConfigImage == null ){
@@ -100,8 +119,8 @@ public class ItemFragment<T> extends Fragment {
             final RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-            String requestUrl = Constants.BASE_URL + Constants.CATE_MOVIE + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
-            Request request = new Request.Builder().url(requestUrl).build();
+//            String requestUrl = Constants.BASE_URL + Constants.CATE_MOVIE + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
+            Request request = new Request.Builder().url(mReqUrl != null ? mReqUrl : "").build();
 
             NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
                 @Override
@@ -119,8 +138,7 @@ public class ItemFragment<T> extends Fragment {
 
                         // parse out JSON to object
                         Moshi moshi = new Moshi.Builder().build();
-                        Class modelClass = Class.forName(mModelClassName);
-                        Type listMyData = Types.newParameterizedType(List.class, modelClass);
+                        Type listMyData = Types.newParameterizedType(List.class, mModelClass);
                         JsonAdapter<List<T>> adapter = moshi.adapter(listMyData);
                         final List<T> list = adapter.fromJson(contentString);
                         getActivity().runOnUiThread(new Runnable() {
@@ -130,8 +148,6 @@ public class ItemFragment<T> extends Fragment {
                             }
                         });
                     } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
                 }
