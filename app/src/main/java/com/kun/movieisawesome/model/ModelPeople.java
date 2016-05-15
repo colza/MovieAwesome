@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by TsaiKunYu on 14/05/16.
  */
-public class ModelPeople {
+public class ModelPeople extends ModelGeneral{
     private Boolean adult;
     private List<Object> also_known_as = new ArrayList<Object>();
     private String biography;
@@ -199,5 +199,30 @@ public class ModelPeople {
      */
     public void setProfile_path(String profile_path) {
         this.profile_path = profile_path;
+    }
+
+    @Override
+    public String getShowImage() {
+        return getProfile_path();
+    }
+
+    @Override
+    public String getShowTitle() {
+        return getName();
+    }
+
+    @Override
+    public String getShowSubtitle() {
+        return getName();
+    }
+
+    @Override
+    public String getShowDescription() {
+        return getBiography();
+    }
+
+    @Override
+    public String getModelType() {
+        return ModelPeople.class.getName();
     }
 }

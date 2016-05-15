@@ -5,8 +5,10 @@
         <import type="com.kun.movieisawesome.model.ModelMovie"></import>
         <import type="com.kun.movieisawesome.model.ModelPeople"></import>
         <import type="com.kun.movieisawesome.model.ModelTV"></import>
+        <import type="com.kun.movieisawesome.model.ModelGeneral"></import>
         <variable
-            name=
+            name="modelGeneral"
+            type="ModelGeneral"/>
         <variable
             name="modelMovie"
             type="ModelMovie"/>
@@ -44,9 +46,10 @@
                 android:layout_marginStart="38dp"
                 android:layout_toEndOf="@+id/poster"
                 android:layout_toRightOf="@+id/poster"
-                android:text="@{modelMovie != null ? modelMovie.title : modelTv != null ? modelTv.name : modelPeople.name}"
+                android:text="@{modelGeneral.showTitle}"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
-
+            <!--android:text="@{modelGeneral.showTitle != moive ? yes : no}"-->
+            <!--android:text="@{modelMovie != null ? modelMovie.title : modelTv != null ? modelTv.name : modelPeople.name}"-->
             <TextView
                 android:id="@+id/rating"
                 android:layout_width="wrap_content"
@@ -64,7 +67,7 @@
                 android:layout_alignLeft="@+id/title"
                 android:layout_alignStart="@+id/title"
                 android:layout_below="@+id/title"
-                android:text="@{modelMovie.original_title}"
+                android:text="@{modelGeneral.showSubtitle}"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <TextView
@@ -74,7 +77,7 @@
                 android:layout_alignLeft="@+id/subtitle"
                 android:layout_alignStart="@+id/subtitle"
                 android:layout_below="@+id/subtitle"
-                android:text="@{modelMovie.overview}"/>
+                android:text="@{modelGeneral.showDescription}"/>
 
             <TextView
                 android:id="@+id/release_date"

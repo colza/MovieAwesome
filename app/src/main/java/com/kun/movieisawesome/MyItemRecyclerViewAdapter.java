@@ -2,7 +2,6 @@ package com.kun.movieisawesome;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import com.kun.movieisawesome.databinding.ListItemBinding;
 import com.kun.movieisawesome.dummy.DummyContent.DummyItem;
 import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
-import com.kun.movieisawesome.model.ModelMovie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -23,14 +21,14 @@ import java.util.List;
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.BindingHolder> {
+public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends RecyclerView.Adapter<MyItemRecyclerViewAdapter<TM>.BindingHolder> {
 
-    private final List<? extends ModelGeneral> mValues;
+    private final List<TM> mValues;
     private final OnListFragmentInteractionListener mListener;
     private ModelConfigImage mModelConfigImage;
 
 
-    public MyItemRecyclerViewAdapter(List<? extends ModelGeneral> items, OnListFragmentInteractionListener listener, ModelConfigImage modelConfigImage) {
+    public MyItemRecyclerViewAdapter(List<TM> items, OnListFragmentInteractionListener listener, ModelConfigImage modelConfigImage) {
         mValues = items;
         mListener = listener;
         mModelConfigImage = modelConfigImage;
@@ -50,9 +48,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     // bind data through view holder
     @Override
     public void onBindViewHolder(BindingHolder holder, int position) {
-        ModelGeneral value = mValues.get(position);
-        Log.i("LOG", value.toString());
-        holder.getBinding().setModelMovie(value);
+        TM value = mValues.get(position);
+        holder.getBinding().setModelGeneral(value);
+//        holder.getBinding().setModelMovie(value);
         String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(4) + value.getShowImage();
         Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
 //        holder.posterImage.setImageResource(android.R.drawable.stat_notify_chat);

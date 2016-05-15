@@ -282,4 +282,24 @@ public class ModelMovie extends ModelGeneral{
     public String getShowImage() {
         return getPoster_path();
     }
+
+    @Override
+    public String getShowTitle() {
+        return title;
+    }
+
+    @Override
+    public String getShowSubtitle() {
+        return original_title;
+    }
+
+    @Override
+    public String getShowDescription() {
+        return getOverview();
+    }
+
+    @Override
+    public String getModelType() {
+        return ModelMovie.class.getName();
+    }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by TsaiKunYu on 14/05/16.
  */
-public class ModelTV {
+public class ModelTV extends ModelGeneral{
 
     private String poster_path;
     private Double popularity;
@@ -259,4 +259,28 @@ public class ModelTV {
         this.original_name = original_name;
     }
 
+    @Override
+    public String getShowImage() {
+        return getPoster_path();
+    }
+
+    @Override
+    public String getShowTitle() {
+        return getName();
+    }
+
+    @Override
+    public String getShowSubtitle() {
+        return getOriginal_name();
+    }
+
+    @Override
+    public String getModelType() {
+        return ModelTV.class.getName();
+    }
+
+    @Override
+    public String getShowDescription() {
+        return getOverview();
+    }
 }

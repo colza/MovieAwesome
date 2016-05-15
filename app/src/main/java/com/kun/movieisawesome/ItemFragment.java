@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.kun.movieisawesome.dummy.DummyContent.DummyItem;
 import com.kun.movieisawesome.model.ModelConfigImage;
-import com.kun.movieisawesome.model.ModelMovie;
+import com.kun.movieisawesome.model.ModelGeneral;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -36,12 +36,12 @@ import okhttp3.Response;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class ItemFragment extends Fragment {
+public class ItemFragment<T> extends Fragment {
 
     // TODO: Customize parameter argument names
-    private static final String ARG_MODEL_NAME = "modelName";
+    private static final String ARG_MODEL_CLASS_NAME = "modelClassName";
     // TODO: Customize parameters
-    private String mModelName;
+    private String mModelClassName;
     private OnListFragmentInteractionListener mListener;
     private ModelConfigImage modelConfigImage;
 
@@ -54,10 +54,10 @@ public class ItemFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ItemFragment newInstance(String modelName) {
-        ItemFragment fragment = new ItemFragment();
+    public static <T extends ModelGeneral> ItemFragment newInstance(String modelClassName) {
+        ItemFragment fragment = new ItemFragment<T>();
         Bundle args = new Bundle();
-        args.putString(ARG_MODEL_NAME, modelName);
+        args.putString(ARG_MODEL_CLASS_NAME, modelClassName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,7 +67,7 @@ public class ItemFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mModelName = getArguments().getString(ARG_MODEL_NAME);
+            mModelClassName = getArguments().getString(ARG_MODEL_CLASS_NAME);
         }
 
         if( modelConfigImage == null ){
@@ -115,12 +115,14 @@ public class ItemFragment extends Fragment {
                     Log.i("LOG","result = " + result);
                     try {
                         JSONObject jsonObject = new JSONObject(result);
-                        String contentString = jsonObject.getJSONArray("results").toString();
+                        String contentString = jsonObject.getJSONArray(Constants.RESP_JSON_KEY_RESULTS).toString();
 
+                        // parse out JSON to object
                         Moshi moshi = new Moshi.Builder().build();
-                        Type listMyData = Types.newParameterizedType(List.class, ModelMovie.class);
-                        JsonAdapter<List<ModelMovie>> adapter = moshi.adapter(listMyData);
-                        final List<ModelMovie> list = adapter.fromJson(jsonObject.getJSONArray(Constants.RESP_JSON_KEY_RESULTS).toString());
+                        Class modelClass = Class.forName(mModelClassName);
+                        Type listMyData = Types.newParameterizedType(List.class, modelClass);
+                        JsonAdapter<List<T>> adapter = moshi.adapter(listMyData);
+                        final List<T> list = adapter.fromJson(contentString);
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -128,6 +130,8 @@ public class ItemFragment extends Fragment {
                             }
                         });
                     } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
                 }

@@ -5,4 +5,8 @@ package com.kun.movieisawesome.model;
  */
 public abstract class ModelGeneral {
     public abstract String getShowImage();
+    public abstract String getShowTitle();
+    public abstract String getShowSubtitle();
+    public abstract String getShowDescription();
+    public abstract String getModelType();
 }
