@@ -219,7 +219,7 @@ public class ModelPeople extends ModelGeneral{
     }
 
     @Override
-    public String getRequestUrl() {
+    public String getRequestPopularUrl() {
         return Constants.BASE_URL + Constants.CATE_PERSON + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
     }
 
@@ -231,5 +231,21 @@ public class ModelPeople extends ModelGeneral{
     @Override
     public String getModelType() {
         return ModelPeople.class.getName();
+    }
+
+
+    @Override
+    public String getShowRelease() {
+        return null;
+    }
+
+    @Override
+    public String getAvgVote() {
+        return null;
+    }
+
+    @Override
+    public String getSearchUrl() {
+        return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_PERSON + "?" + Constants.ATTACH_API_KEY;
     }
 }

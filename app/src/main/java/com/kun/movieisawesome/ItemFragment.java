@@ -40,11 +40,14 @@ public class ItemFragment<T> extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_MODEL_CLASS_NAME = "modelClassName";
+    private static final String ARG_REQ_URL = "reqUrl";
     // TODO: Customize parameters
     private RecyclerView mRecyclerView;
+
     private String mModelClassName;
     private Class<?> mModelClass;
     private String mReqUrl;
+
     private OnListFragmentInteractionListener mListener;
     private OnLoadMoreListener mOnLoadMoreListener;
     private ModelConfigImage modelConfigImage;
@@ -59,10 +62,11 @@ public class ItemFragment<T> extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName) {
+    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName, String reqUrl) {
         ItemFragment fragment = new ItemFragment<TA>();
         Bundle args = new Bundle();
         args.putString(ARG_MODEL_CLASS_NAME, modelClassName);
+        args.putString(ARG_REQ_URL, reqUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,21 +77,13 @@ public class ItemFragment<T> extends Fragment {
 
         if (getArguments() != null) {
             mModelClassName = getArguments().getString(ARG_MODEL_CLASS_NAME);
+            mReqUrl = getArguments().getString(ARG_REQ_URL);
         }
 
-        if( mModelClassName != null){
+        if( mModelClassName != null) {
             try {
                 mModelClass = Class.forName(mModelClassName);
-                if( mModelClass != null ){
-                    Object object = mModelClass.newInstance();
-                    if( object instanceof ModelGeneral)
-                        mReqUrl= ((ModelGeneral)object).getRequestUrl();
-                }
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (java.lang.InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -115,7 +111,6 @@ public class ItemFragment<T> extends Fragment {
                 fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl + "&page=" + (++page): "");
             }
         };
-
     }
 
     @Override
@@ -207,5 +202,9 @@ public class ItemFragment<T> extends Fragment {
 
     public interface OnLoadMoreListener{
         void loadMore();
+    }
+
+    public String getmModelClassName() {
+        return mModelClassName;
     }
 }

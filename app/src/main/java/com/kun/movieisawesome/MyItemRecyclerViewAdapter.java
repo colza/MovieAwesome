@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.kun.movieisawesome.ItemFragment.OnListFragmentInteractionListener;
@@ -29,6 +31,7 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
     private final OnListFragmentInteractionListener mListener;
     private final ItemFragment.OnLoadMoreListener onLoadMoreListener;
     private ModelConfigImage mModelConfigImage;
+    private int lastPosition = -1;
 
 
 //    public MyItemRecyclerViewAdapter(List<TM> items, OnListFragmentInteractionListener listener, ModelConfigImage modelConfigImage) {
@@ -63,12 +66,26 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
     public void onBindViewHolder(BindingHolder holder, int position) {
         TM value = mValues.get(position);
         holder.getBinding().setModelGeneral(value);
-        String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(4) + value.getShowImage();
-        Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
+//        String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(4) + value.getShowImage();
+//        Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
+        Picasso.with(holder.posterImage.getContext()).load((String)holder.posterImage.getTag()).into(holder.posterImage);
+
+        setAnimation(holder.getBinding().getRoot(), position);
 
         if( position > getItemCount() - 1 ){
             // load more data, return a list.
             onLoadMoreListener.loadMore();
+        }
+    }
+
+    private void setAnimation(View viewToAnimate, int position)
+    {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastPosition)
+        {
+            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), android.R.anim.slide_in_left);
+            viewToAnimate.startAnimation(animation);
+            lastPosition = position;
         }
     }
 

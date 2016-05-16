@@ -21,6 +21,4 @@ public class Constants {
 
     public static final String RESP_JSON_KEY_RESULTS = "results";
     public static final String RESP_JSON_KEY_IMAGES = "images";
-
-//    public static final String METHOD_GET_REQ_URL = "getRequestUrl";
 }

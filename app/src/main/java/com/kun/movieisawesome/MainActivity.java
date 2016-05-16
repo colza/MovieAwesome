@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.widget.SearchView;
 
 import com.kun.movieisawesome.dummy.DummyContent;
+import com.kun.movieisawesome.model.ModelGeneral;
 import com.kun.movieisawesome.model.ModelMovie;
 import com.kun.movieisawesome.model.ModelPeople;
 import com.kun.movieisawesome.model.ModelTV;
@@ -63,13 +65,20 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        checkUpdateConfigImage();
+    }
+
+    private void checkUpdateConfigImage(){
+        if( PreferenceManager.getDefaultSharedPreferences(this).contains(Constants.PREF_CONFIG_IMAGE))
+            return;
+
         String getConfig = Constants.BASE_URL + Constants.GET_CONFIG + "?" + Constants.ATTACH_API_KEY;
         Request request = new Request.Builder().url(getConfig).build();
 
         NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                e.printStackTrace();
             }
 
             @Override
@@ -87,7 +96,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -103,11 +111,10 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
+        // set up search function
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        Log.i("LOG","Act component name = " + getComponentName());
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-
         searchView.setSearchableInfo(searchableInfo);
         return true;
     }
@@ -148,8 +155,23 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        ItemFragment itemFragment = ItemFragment.newInstance(className);
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment).commit();
+        try {
+            Class<?> modelClass = Class.forName(className);
+            if( modelClass != null ){
+                Object object = modelClass.newInstance();
+                if( object instanceof ModelGeneral) {
+                    String requestUrl = ((ModelGeneral) object).getRequestPopularUrl();
+                    ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment, "req").commit();
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -160,8 +182,31 @@ public class MainActivity extends AppCompatActivity
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.i("LOG","Search query = " + query);
+
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag("req");
+            if( fragment instanceof ItemFragment){
+                String className = ((ItemFragment)fragment).getmModelClassName();
+                try {
+                    Class<?> modelClass = Class.forName(className);
+                    if( modelClass != null ){
+                        Object object = modelClass.newInstance();
+                        if( object instanceof ModelGeneral) {
+                            String requestUrl = ((ModelGeneral) object).getSearchUrl();
+                            ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
+                            getSupportFragmentManager().beginTransaction().add(R.id.main_content, itemFragment, "search").commit();
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

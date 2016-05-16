@@ -9,6 +9,8 @@ public abstract class ModelGeneral {
     public abstract String getShowSubtitle();
     public abstract String getShowDescription();
     public abstract String getModelType();
-    public abstract String getRequestUrl();
-
+    public abstract String getRequestPopularUrl();
+    public abstract String getShowRelease();
+    public abstract String getAvgVote();
+    public abstract String getSearchUrl();
 }

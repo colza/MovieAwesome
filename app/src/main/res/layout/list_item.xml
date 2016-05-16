@@ -2,22 +2,15 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <import type="com.kun.movieisawesome.model.ModelMovie"></import>
-        <import type="com.kun.movieisawesome.model.ModelPeople"></import>
-        <import type="com.kun.movieisawesome.model.ModelTV"></import>
         <import type="com.kun.movieisawesome.model.ModelGeneral"></import>
+        <import type="com.kun.movieisawesome.model.ModelConfigImage"></import>
         <variable
             name="modelGeneral"
             type="ModelGeneral"/>
+
         <variable
-            name="modelMovie"
-            type="ModelMovie"/>
-        <variable
-            name="modelTv"
-            type="ModelTV"/>
-        <variable
-            name="modelPeople"
-            type="ModelPeople"/>
+            name="modelConfigImage"
+            type="ModelConfigImage"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -31,6 +24,7 @@
             <ImageView
                 android:id="@+id/poster"
                 android:background="@android:color/black"
+                android:tag="@{modelConfigImage.base_url+modelConfigImage.poster_sizes.get(4)+modelGeneral.showImage}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -48,10 +42,9 @@
                 android:layout_toRightOf="@+id/poster"
                 android:text="@{modelGeneral.showTitle}"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
-            <!--android:text="@{modelGeneral.showTitle != moive ? yes : no}"-->
-            <!--android:text="@{modelMovie != null ? modelMovie.title : modelTv != null ? modelTv.name : modelPeople.name}"-->
             <TextView
                 android:id="@+id/rating"
+                android:visibility="@{modelGeneral.avgVote == null ? View.INVISBLE : View.VISIBLE}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -81,6 +74,7 @@
 
             <TextView
                 android:id="@+id/release_date"
+                android:visibility="@{modelGeneral.showRelease == null ? View.INVISBLE : View.VISIBLE}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/subtitle"
@@ -88,7 +82,7 @@
                 android:layout_marginStart="17dp"
                 android:layout_toEndOf="@+id/subtitle"
                 android:layout_toRightOf="@+id/subtitle"
-                android:text="@{modelMovie.release_date}"
+                android:text="@{modelGeneral.showRelease}"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>

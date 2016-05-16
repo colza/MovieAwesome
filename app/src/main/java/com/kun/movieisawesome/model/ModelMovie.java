@@ -306,7 +306,22 @@ public class ModelMovie extends ModelGeneral{
     }
 
     @Override
-    public String getRequestUrl() {
+    public String getRequestPopularUrl() {
         return Constants.BASE_URL + Constants.CATE_MOVIE + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
+    }
+
+    @Override
+    public String getSearchUrl() {
+        return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_MOVIE + "?" + Constants.ATTACH_API_KEY;
+    }
+
+    @Override
+    public String getShowRelease() {
+        return getRelease_date();
+    }
+
+    @Override
+    public String getAvgVote() {
+        return String.valueOf(getVote_average());
     }
 }
