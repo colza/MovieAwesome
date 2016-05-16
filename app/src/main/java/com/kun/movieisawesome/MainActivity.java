@@ -107,10 +107,7 @@ public class MainActivity extends AppCompatActivity
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         Log.i("LOG","Act component name = " + getComponentName());
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-        if(searchableInfo == null )
-            Log.i("LOG","search null");
-        if( searchView == null )
-            Log.i("LOG","search view null");
+
         searchView.setSearchableInfo(searchableInfo);
         return true;
     }

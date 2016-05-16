@@ -14,6 +14,8 @@ import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,20 +27,31 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
 
     private final List<TM> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private final ItemFragment.OnLoadMoreListener onLoadMoreListener;
     private ModelConfigImage mModelConfigImage;
 
 
-    public MyItemRecyclerViewAdapter(List<TM> items, OnListFragmentInteractionListener listener, ModelConfigImage modelConfigImage) {
-        mValues = items;
+//    public MyItemRecyclerViewAdapter(List<TM> items, OnListFragmentInteractionListener listener, ModelConfigImage modelConfigImage) {
+//        mValues = items;
+//        mListener = listener;
+//        mModelConfigImage = modelConfigImage;
+//    }
+
+    public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener, ItemFragment.OnLoadMoreListener onLoadMoreListener, ModelConfigImage modelConfigImage) {
+        mValues = new ArrayList<>();
         mListener = listener;
+        this.onLoadMoreListener = onLoadMoreListener;
         mModelConfigImage = modelConfigImage;
+    }
+
+    public void attachCollections(Collection<TM> collection){
+        mValues.addAll(collection);
+        notifyDataSetChanged();
     }
 
     // View holder
     @Override
     public BindingHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-
         ListItemBinding listItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.list_item, parent, false);
         BindingHolder bindingHolder = new BindingHolder(listItemBinding.getRoot());
         bindingHolder.setBinding(listItemBinding);
@@ -50,12 +63,12 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
     public void onBindViewHolder(BindingHolder holder, int position) {
         TM value = mValues.get(position);
         holder.getBinding().setModelGeneral(value);
-//        holder.getBinding().setModelMovie(value);
         String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(4) + value.getShowImage();
         Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
 
         if( position > getItemCount() - 1 ){
             // load more data, return a list.
+            onLoadMoreListener.loadMore();
         }
     }
 

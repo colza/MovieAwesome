@@ -41,11 +41,14 @@ public class ItemFragment<T> extends Fragment {
     // TODO: Customize parameter argument names
     private static final String ARG_MODEL_CLASS_NAME = "modelClassName";
     // TODO: Customize parameters
+    private RecyclerView mRecyclerView;
     private String mModelClassName;
     private Class<?> mModelClass;
     private String mReqUrl;
     private OnListFragmentInteractionListener mListener;
+    private OnLoadMoreListener mOnLoadMoreListener;
     private ModelConfigImage modelConfigImage;
+    private int page = 1;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -56,8 +59,8 @@ public class ItemFragment<T> extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static <T extends ModelGeneral> ItemFragment newInstance(String modelClassName) {
-        ItemFragment fragment = new ItemFragment<T>();
+    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName) {
+        ItemFragment fragment = new ItemFragment<TA>();
         Bundle args = new Bundle();
         args.putString(ARG_MODEL_CLASS_NAME, modelClassName);
         fragment.setArguments(args);
@@ -106,6 +109,13 @@ public class ItemFragment<T> extends Fragment {
             }
         }
 
+        mOnLoadMoreListener = new OnLoadMoreListener() {
+            @Override
+            public void loadMore() {
+                fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl + "&page=" + (++page): "");
+            }
+        };
+
     }
 
     @Override
@@ -116,46 +126,50 @@ public class ItemFragment<T> extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            final RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            Request request = new Request.Builder().url(mReqUrl != null ? mReqUrl : "").build();
-
-            NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String result = response.body().string();
-                    Log.i("LOG","result = " + result);
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        String contentString = jsonObject.getJSONArray(Constants.RESP_JSON_KEY_RESULTS).toString();
-
-                        // parse out JSON to object
-                        Moshi moshi = new Moshi.Builder().build();
-                        Type listMyData = Types.newParameterizedType(List.class, mModelClass);
-                        JsonAdapter<List<T>> adapter = moshi.adapter(listMyData);
-                        final List<T> list = adapter.fromJson(contentString);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                recyclerView.setAdapter(new MyItemRecyclerViewAdapter(list , mListener, modelConfigImage));
-                            }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
-
+            mRecyclerView = (RecyclerView) view;
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            mRecyclerView.setAdapter(new MyItemRecyclerViewAdapter(mListener, mOnLoadMoreListener, modelConfigImage));
+            fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl : "");
         }
         return view;
     }
 
+    private void fetchRemoteDataUpdateView(String reqUrl){
+        Request request = new Request.Builder().url(reqUrl).build();
+
+        NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                Log.i("LOG","result = " + result);
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    String contentString = jsonObject.getJSONArray(Constants.RESP_JSON_KEY_RESULTS).toString();
+                    final List<T> list = transferJArrToList(contentString);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((MyItemRecyclerViewAdapter) mRecyclerView.getAdapter()).attachCollections(list);
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private List<T> transferJArrToList(String jsonArrStr) throws IOException {
+        Moshi moshi = new Moshi.Builder().build();
+        Type listMyData = Types.newParameterizedType(List.class, mModelClass);
+        JsonAdapter<List<T>> adapter = moshi.adapter(listMyData);
+        return adapter.fromJson(jsonArrStr);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -187,10 +201,11 @@ public class ItemFragment<T> extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);
-    }
-
-    public void loadMore(){
         // load more data and return a list
         // append this list to adapter list.
+    }
+
+    public interface OnLoadMoreListener{
+        void loadMore();
     }
 }
