@@ -118,8 +118,6 @@ public class ItemFragment<T> extends Fragment {
             Context context = view.getContext();
             final RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-//            String requestUrl = Constants.BASE_URL + Constants.CATE_MOVIE + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
             Request request = new Request.Builder().url(mReqUrl != null ? mReqUrl : "").build();
 
             NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
@@ -189,5 +187,10 @@ public class ItemFragment<T> extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);
+    }
+
+    public void loadMore(){
+        // load more data and return a list
+        // append this list to adapter list.
     }
 }

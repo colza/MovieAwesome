@@ -53,21 +53,10 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
 //        holder.getBinding().setModelMovie(value);
         String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(4) + value.getShowImage();
         Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
-//        holder.posterImage.setImageResource(android.R.drawable.stat_notify_chat);
-//        holder.mItem = mValues.get(position);
-//        holder.mIdView.setText(mValues.get(position).id);
-//        holder.mContentView.setText(mValues.get(position).content);
 
-//        holder.mView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (null != mListener) {
-//                    // Notify the active callbacks interface (the activity, if the
-//                    // fragment is attached to one) that an item has been selected.
-//                    mListener.onListFragmentInteraction(holder.mItem);
-//                }
-//            }
-//        });
+        if( position > getItemCount() - 1 ){
+            // load more data, return a list.
+        }
     }
 
     @Override

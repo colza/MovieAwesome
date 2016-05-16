@@ -12,6 +12,8 @@ public class Constants {
     public static final String CATE_PERSON = "person/";
     public static final String GET_CONFIG = "configuration";
     public static final String GET_POPULAR = "popular/";
+    public static final String GET_SEARCH = "search/";
+    public static final String PARAM_QUERY = "query";
 
 
     public static final String PREF_CONFIG_IMAGE = "configImage";
@@ -20,5 +22,5 @@ public class Constants {
     public static final String RESP_JSON_KEY_RESULTS = "results";
     public static final String RESP_JSON_KEY_IMAGES = "images";
 
-    public static final String METHOD_GET_REQ_URL = "getRequestUrl";
+//    public static final String METHOD_GET_REQ_URL = "getRequestUrl";
 }
