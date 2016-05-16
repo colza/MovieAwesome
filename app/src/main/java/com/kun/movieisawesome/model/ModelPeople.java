@@ -248,4 +248,14 @@ public class ModelPeople extends ModelGeneral{
     public String getSearchUrl() {
         return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_PERSON + "?" + Constants.ATTACH_API_KEY;
     }
+
+    @Override
+    public List<Integer> getGenre_ids() {
+        return null;
+    }
+
+    @Override
+    public String getGenreType() {
+        return null;
+    }
 }

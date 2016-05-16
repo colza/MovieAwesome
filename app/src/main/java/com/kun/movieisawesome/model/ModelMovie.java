@@ -324,4 +324,9 @@ public class ModelMovie extends ModelGeneral{
     public String getAvgVote() {
         return String.valueOf(getVote_average());
     }
+
+    @Override
+    public String getGenreType() {
+        return Constants.PREF_MOVIE_GENRE_LIST;
+    }
 }

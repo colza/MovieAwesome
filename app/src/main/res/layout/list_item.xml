@@ -4,6 +4,7 @@
     <data>
         <import type="com.kun.movieisawesome.model.ModelGeneral"></import>
         <import type="com.kun.movieisawesome.model.ModelConfigImage"></import>
+        <import type="android.view.View"/>
         <variable
             name="modelGeneral"
             type="ModelGeneral"/>
@@ -44,23 +45,24 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
             <TextView
                 android:id="@+id/rating"
-                android:visibility="@{modelGeneral.avgVote == null ? View.INVISBLE : View.VISIBLE}"
+                android:visibility="@{modelGeneral.avgVote == null ? View.INVISIBLE : View.VISIBLE}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/title"
                 android:layout_toRightOf="@+id/title"
-                android:text="@{modelMovie.vote_average}"
+                android:layout_alignParentRight="true"
+                android:text="@{modelGeneral.avgVote}"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <TextView
                 android:id="@+id/subtitle"
+                android:visibility="@{modelGeneral.genreType == null ? View.INVISIBLE : View.VISIBLE}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/title"
                 android:layout_alignStart="@+id/title"
                 android:layout_below="@+id/title"
-                android:text="@{modelGeneral.showSubtitle}"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <TextView
@@ -74,7 +76,7 @@
 
             <TextView
                 android:id="@+id/release_date"
-                android:visibility="@{modelGeneral.showRelease == null ? View.INVISBLE : View.VISIBLE}"
+                android:visibility="@{modelGeneral.showRelease == null ? View.INVISIBLE : View.VISIBLE}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/subtitle"
@@ -82,6 +84,7 @@
                 android:layout_marginStart="17dp"
                 android:layout_toEndOf="@+id/subtitle"
                 android:layout_toRightOf="@+id/subtitle"
+                android:layout_alignParentRight="true"
                 android:text="@{modelGeneral.showRelease}"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
         </RelativeLayout>

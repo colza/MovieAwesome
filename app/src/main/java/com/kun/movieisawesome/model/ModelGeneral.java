@@ -1,5 +1,7 @@
 package com.kun.movieisawesome.model;
 
+import java.util.List;
+
 /**
  * Created by TsaiKunYu on 15/05/16.
  */
@@ -13,4 +15,6 @@ public abstract class ModelGeneral {
     public abstract String getShowRelease();
     public abstract String getAvgVote();
     public abstract String getSearchUrl();
+    public abstract List<Integer> getGenre_ids();
+    public abstract String getGenreType();
 }
