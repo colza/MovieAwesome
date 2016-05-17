@@ -1,6 +1,7 @@
 package com.kun.movieisawesome;
 
 import android.content.Context;
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,11 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
 //        mModelConfigImage = modelConfigImage;
 //    }
 
+    @BindingAdapter({"bind:imageUrl"})
+    public static void loadImage(ImageView view, String url) {
+        Picasso.with(view.getContext()).load(url).into(view);
+    }
+
     public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener, ItemFragment.OnLoadMoreListener onLoadMoreListener, ModelConfigImage modelConfigImage) {
         mValues = new ArrayList<>();
         mListener = listener;
@@ -74,6 +80,7 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
         TM value = mValues.get(position);
         holder.getBinding().setModelGeneral(value);
         holder.getBinding().setModelConfigImage(mModelConfigImage);
+        holder.getBinding().setIsDetail(false);
 
         String genreType = value.getGenreType();
         if( genreType != null ) {
@@ -82,9 +89,9 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
             holder.subtitle.setText(genreString);
         }
 
-//        String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(4) + value.getShowImage();
+//        String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(3) + value.getShowImage();
 //        Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
-        Picasso.with(holder.posterImage.getContext()).load((String)holder.posterImage.getTag()).into(holder.posterImage);
+//        Picasso.with(holder.posterImage.getContext()).load((String)holder.posterImage.getTag()).into(holder.posterImage);
 
         setAnimation(holder.getBinding().getRoot(), position);
 

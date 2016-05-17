@@ -14,8 +14,26 @@
     tools:context="com.kun.movieisawesome.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TextView
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:layout_height="wrap_content"/>
+    <ImageView
+        android:id="@+id/adult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/overview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
 </RelativeLayout>
