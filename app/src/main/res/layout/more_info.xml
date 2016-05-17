@@ -6,8 +6,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
+        android:layout_marginLeft="@dimen/text_content_padding"
+        android:layout_marginRight="@dimen/text_content_padding"
         android:background="@android:color/darker_gray"
         />
     <TextView
