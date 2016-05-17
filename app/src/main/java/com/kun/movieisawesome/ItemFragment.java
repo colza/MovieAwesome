@@ -2,7 +2,6 @@ package com.kun.movieisawesome;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kun.movieisawesome.dummy.DummyContent.DummyItem;
 import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
 import com.squareup.moshi.JsonAdapter;
@@ -88,26 +86,10 @@ public class ItemFragment<T> extends Fragment {
             }
         }
 
-        if( modelConfigImage == null ){
-            String configImage = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(Constants.PREF_CONFIG_IMAGE, null);
-            if( configImage != null ){
-                Moshi moshi = new Moshi.Builder().build();
-                JsonAdapter<ModelConfigImage> jsonAdapter = moshi.adapter(ModelConfigImage.class);
-                try {
-                    Log.i("LOG","is model " + configImage);
-                    modelConfigImage = jsonAdapter.fromJson(configImage);
-                    if( modelConfigImage == null )
-                        Log.i("LOG","is model STILL NULL" );
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.i("LOG","parsing error");
-                }
-            }
-        }
-
         mOnLoadMoreListener = new OnLoadMoreListener() {
             @Override
             public void loadMore() {
+                Log.i("LOG","load more");
                 fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl + "&page=" + (++page): "");
             }
         };
@@ -123,7 +105,7 @@ public class ItemFragment<T> extends Fragment {
             Context context = view.getContext();
             mRecyclerView = (RecyclerView) view;
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-            mRecyclerView.setAdapter(new MyItemRecyclerViewAdapter(mListener, mOnLoadMoreListener, modelConfigImage));
+            mRecyclerView.setAdapter(new MyItemRecyclerViewAdapter(mListener, mOnLoadMoreListener));
             fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl : "");
         }
         return view;
@@ -194,10 +176,7 @@ public class ItemFragment<T> extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
-        // load more data and return a list
-        // append this list to adapter list.
+        void onListFragmentInteraction(ModelGeneral modelGeneral);
     }
 
     public interface OnLoadMoreListener{

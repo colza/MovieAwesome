@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:text="@{modelGeneral.avgVote}"
+            android:text="@{isDetail.equals(`false`) ? modelGeneral.avgVote : `IMDB:` + modelGeneral.avgVote}"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{modelGeneral.avgVote == null ? View.INVISIBLE : View.VISIBLE}"/>
 
@@ -49,7 +49,8 @@
             android:layout_alignStart="@+id/title"
             android:layout_below="@+id/title"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="@{modelGeneral.genreType == null ? View.INVISIBLE : View.VISIBLE}"/>
+            android:visibility="@{modelGeneral.genreType == null ? View.INVISIBLE : View.VISIBLE}"
+            my_max_line="@{isDetail.equals(`false`) ? 1 : Integer.MAX_VALUE}"/>
         <TextView
             android:id="@+id/release_date"
             android:layout_width="wrap_content"
@@ -68,7 +69,8 @@
             android:layout_alignStart="@+id/subtitle"
             android:layout_below="@+id/release_date"
             android:paddingTop="10dp"
-            android:text="@{modelGeneral.showDescription}"/>
+            android:text="@{modelGeneral.showDescription}"
+            my_max_line="@{isDetail.equals(`false`) ? 4 : Integer.MAX_VALUE}"/>
 
     </RelativeLayout>
 </layout>

@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,24 +22,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 
-import com.kun.movieisawesome.dummy.DummyContent;
+import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
 import com.kun.movieisawesome.model.ModelMovie;
 import com.kun.movieisawesome.model.ModelPeople;
 import com.kun.movieisawesome.model.ModelTV;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ItemFragment.OnListFragmentInteractionListener {
+    public static ModelConfigImage sModelConfigImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,43 +61,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_CONFIG, new String[]{Constants.RESP_JSON_KEY_IMAGES}, Constants.PREF_CONFIG_IMAGE);
+        NetworkRequest.fetchRemoteJsonAndSaveIntoPref(this, Constants.RESTFUL_GET_CONFIG, new String[]{Constants.RESP_JSON_KEY_IMAGES}, Constants.PREF_CONFIG_IMAGE);
         NetworkRequest.fetchGenreList(this, Constants.RESTFUL_GET_MOVIE_GENRE_LIST, Constants.PREF_MOVIE_GENRE_LIST);
         NetworkRequest.fetchGenreList(this, Constants.RESTFUL_GET_TV_GENRE_LIST, Constants.PREF_TV_GENRE_LIST);
-//        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_MOVIE_GENRE_LIST, null, Constants.PREF_MOVIE_GENRE_LIST);
-//        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_TV_GENRE_LIST, null, Constants.PREF_TV_GENRE_LIST);
     }
 
-    private void fetchRemoteJsonAndSaveIntoPref(String reqUrl, final String[] childKeys, final String prefKey){
-        if( PreferenceManager.getDefaultSharedPreferences(this).contains(prefKey))
-            return;
 
-        Request request = new Request.Builder().url(reqUrl).build();
-
-        NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseStr = response.body().string();
-                try {
-                    JSONObject jsonObject = new JSONObject(responseStr);
-                    if( childKeys != null){
-                        for( String key : childKeys)
-                            jsonObject = jsonObject.getJSONObject(key);
-                    }
-
-                    String resultStr = jsonObject.toString();
-                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(prefKey, resultStr).commit();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 
 
     @Override
@@ -222,7 +187,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(ModelGeneral modelGeneral) {
+        DetailFragment detailFragment = DetailFragment.newInstance(modelGeneral);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(modelGeneral.getShowTitle());
+        transaction.add(R.id.main_content, detailFragment).commit();
+    }
 
+    public static ModelConfigImage getsModelConfigImage(Context context) {
+        if( sModelConfigImage == null){
+            String configImage = PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.PREF_CONFIG_IMAGE, null);
+            if( configImage != null ){
+                Moshi moshi = new Moshi.Builder().build();
+                JsonAdapter<ModelConfigImage> jsonAdapter = moshi.adapter(ModelConfigImage.class);
+                try {
+                    sModelConfigImage = jsonAdapter.fromJson(configImage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return sModelConfigImage;
     }
 }

@@ -25,26 +25,34 @@
             type="String"/>
     </data>
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/poster"
-            layout="@layout/image_content"
-            bind:isDetail="@{isDetail}"
-            bind:modelConfigImage="@{modelConfigImage}"
-            bind:modelGeneral="@{modelGeneral}"
-            />
-
-        <include
-            layout="@layout/text_content"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        >
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/poster"
-            bind:isDetail="@{isDetail}"
-            bind:modelGeneral="@{modelGeneral}"
-            ></include>
+            >
 
-    </RelativeLayout>
+            <include
+                android:id="@+id/poster"
+                layout="@layout/image_content"
+                bind:isDetail="@{isDetail}"
+                bind:modelConfigImage="@{modelConfigImage}"
+                bind:modelGeneral="@{modelGeneral}"
+                />
+
+            <include
+                layout="@layout/text_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/poster"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                bind:isDetail="@{isDetail}"
+                bind:modelGeneral="@{modelGeneral}"
+                ></include>
+        </RelativeLayout>
+    </ScrollView>
 </layout>

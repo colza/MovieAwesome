@@ -2,6 +2,7 @@ package com.kun.movieisawesome;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,37 @@ public class NetworkRequest {
         }
 
         return okHttpClient;
+    }
+
+    public static void fetchRemoteJsonAndSaveIntoPref(final Context context, String reqUrl, final String[] childKeys, final String prefKey){
+        if( PreferenceManager.getDefaultSharedPreferences(context).contains(prefKey))
+            return;
+
+        Request request = new Request.Builder().url(reqUrl).build();
+
+        NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseStr = response.body().string();
+                try {
+                    JSONObject jsonObject = new JSONObject(responseStr);
+                    if( childKeys != null){
+                        for( String key : childKeys)
+                            jsonObject = jsonObject.getJSONObject(key);
+                    }
+
+                    String resultStr = jsonObject.toString();
+                    PreferenceManager.getDefaultSharedPreferences(context).edit().putString(prefKey, resultStr).commit();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public static void fetchGenreList(Context context, String reqUrl, String prefFile){

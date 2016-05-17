@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,7 @@ import android.widget.TextView;
 import com.kun.movieisawesome.ItemFragment.OnListFragmentInteractionListener;
 import com.kun.movieisawesome.databinding.ListItemBinding;
 import com.kun.movieisawesome.dummy.DummyContent.DummyItem;
-import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,25 +27,15 @@ import java.util.List;
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends RecyclerView.Adapter<MyItemRecyclerViewAdapter<TM>.BindingHolder> {
-    private static JSONObject allGenreJsonObject;
     private final List<TM> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final OnListFragmentInteractionListener mOnListFragmentInteractionListener;
     private final ItemFragment.OnLoadMoreListener mOnLoadMoreListener;
-    private ModelConfigImage mModelConfigImage;
     private int lastPosition = -1;
 
-
-//    public MyItemRecyclerViewAdapter(List<TM> items, OnListFragmentInteractionListener listener, ModelConfigImage modelConfigImage) {
-//        mValues = items;
-//        mListener = listener;
-//        mModelConfigImage = modelConfigImage;
-//    }
-
-    public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener, ItemFragment.OnLoadMoreListener onLoadMoreListener, ModelConfigImage modelConfigImage) {
+    public MyItemRecyclerViewAdapter(OnListFragmentInteractionListener listener, ItemFragment.OnLoadMoreListener onLoadMoreListener) {
         mValues = new ArrayList<>();
-        mListener = listener;
+        mOnListFragmentInteractionListener = listener;
         mOnLoadMoreListener = onLoadMoreListener;
-        mModelConfigImage = modelConfigImage;
     }
 
     public void attachCollections(Collection<TM> collection) {
@@ -63,50 +49,45 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
         ListItemBinding listItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.list_item, parent, false);
         BindingHolder bindingHolder = new BindingHolder(listItemBinding.getRoot());
         bindingHolder.setBinding(listItemBinding);
-        bindingHolder.description.setMaxLines(parent.getResources().getInteger(R.integer.non_detail_desc_max_line));
-        bindingHolder.description.setEllipsize(TextUtils.TruncateAt.END);
-        bindingHolder.subtitle.setMaxLines(parent.getResources().getInteger(R.integer.non_detail_subtitle_max_line));
-        bindingHolder.subtitle.setEllipsize(TextUtils.TruncateAt.END);
+
+        // setup view features
+//        bindingHolder.description.setMaxLines(parent.getResources().getInteger(R.integer.non_detail_desc_max_line));
+//        bindingHolder.description.setEllipsize(TextUtils.TruncateAt.END);
+//        bindingHolder.subtitle.setMaxLines(parent.getResources().getInteger(R.integer.non_detail_subtitle_max_line));
+//        bindingHolder.subtitle.setEllipsize(TextUtils.TruncateAt.END);
+
         return bindingHolder;
     }
 
     // bind data through view holder
     @Override
     public void onBindViewHolder(BindingHolder holder, int position) {
-        TM value = mValues.get(position);
+        final TM value = mValues.get(position);
         holder.getBinding().setModelGeneral(value);
-        holder.getBinding().setModelConfigImage(mModelConfigImage);
+        holder.getBinding().setModelConfigImage(MainActivity.getsModelConfigImage(holder.getBinding().getRoot().getContext()));
         holder.getBinding().setIsDetail(String.valueOf(false));
 
+        // transform genres list to strings
         String genreType = value.getGenreType();
         if (genreType != null) {
             List<Integer> genreList = value.getGenre_ids();
-            String genreString = transferGenreListToString(holder.subtitle.getContext(), genreType, genreList);
+            String genreString = transferGenreListToString(holder.getBinding().getRoot().getContext(), genreType, genreList);
             holder.subtitle.setText(genreString);
         }
 
-//        String imageUrl = mModelConfigImage.getBase_url() + mModelConfigImage.getPoster_sizes().get(3) + value.getShowImage();
-//        Picasso.with(holder.posterImage.getContext()).load(imageUrl).into(holder.posterImage);
-//        Picasso.with(holder.posterImage.getContext()).load((String)holder.posterImage.getTag()).into(holder.posterImage);
-
         setAnimation(holder.getBinding().getRoot(), position);
 
-        if (position > getItemCount() - 1) {
+        holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mOnListFragmentInteractionListener.onListFragmentInteraction(value);
+            }
+        });
+        if (position >= getItemCount() - 1) {
             // load more data, return a list.
             mOnLoadMoreListener.loadMore();
         }
     }
-
-//    private JSONObject initializeGenreObject(Context context, String genreType) {
-//        String genreStringList = PreferenceManager.getDefaultSharedPreferences(context).getString(genreType, "");
-//        try {
-//            allGenreJsonObject = new JSONObject(genreStringList);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return allGenreJsonObject;
-//    }
 
     public String transferGenreListToString(Context context, String prefFile, List<Integer> genreList) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(prefFile, Context.MODE_PRIVATE);
@@ -125,7 +106,7 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
     private void setAnimation(View viewToAnimate, int position) {
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastPosition) {
-            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), android.R.anim.slide_in_left);
+            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_in_from_bottom);
             viewToAnimate.startAnimation(animation);
             lastPosition = position;
         }

@@ -2,11 +2,13 @@ package com.kun.movieisawesome;
 
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -38,6 +40,20 @@ public class BindingAdpaters {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
         layoutParams.addRule(rule, anchorId);
         view.setLayoutParams(layoutParams);
+    }
+
+    @BindingAdapter({"my_max_line"})
+    public static void setMyMaxLine(View view, int line) {
+        if( view instanceof TextView){
+            TextView tv = (TextView) view;
+            try {
+                tv.setMaxLines(line);
+                if( line == -1 )
+                    tv.setEllipsize(TextUtils.TruncateAt.END);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     @BindingAdapter("android:layout_width")
