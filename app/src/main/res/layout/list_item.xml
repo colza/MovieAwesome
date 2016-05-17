@@ -36,6 +36,7 @@
                 bind:isDetail="@{isDetail}"
                 />
             <include
+                android:id="@+id/text_content"
                 layout="@layout/text_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -43,6 +44,13 @@
                 bind:modelGeneral="@{modelGeneral}"
                 bind:isDetail="@{isDetail}"
                 ></include>
+            <include
+                layout="@layout/more_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/text_content"
+                android:layout_toRightOf="@id/poster"
+                />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </layout>
