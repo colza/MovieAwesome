@@ -19,10 +19,11 @@
     </data>
     <ImageView
         android:id="@+id/poster"
-        android:background="@android:color/black"
+        android:background="@android:color/white"
         android:layout_width="@{isDetail.equals(String.valueOf(Boolean.FALSE)) ? @dimen/image_width_non_detail : @dimen/image_width_detail, default = wrap_content}"
         android:layout_height="@{isDetail.equals(String.valueOf(Boolean.FALSE)) ? @dimen/image_height_non_detail : @dimen/image_height_detail, default = wrap_content}"
         android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
         relative_layout_rule="@{isDetail.equals(String.valueOf(Boolean.FALSE)) ? RelativeLayout.ALIGN_PARENT_LEFT: RelativeLayout.CENTER_HORIZONTAL}"
         imageUrl="@{isDetail.equals(String.valueOf(Boolean.FALSE)) ? modelConfigImage.base_url+modelConfigImage.poster_sizes.get(3)+modelGeneral.poster_path : modelConfigImage.base_url+modelConfigImage.backdrop_sizes.get(1)+modelGeneral.backdrop_path }"
         placeholder="@{@drawable/placeholder}"
