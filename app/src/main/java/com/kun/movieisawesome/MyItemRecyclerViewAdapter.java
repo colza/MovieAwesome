@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,10 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
         ListItemBinding listItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.list_item, parent, false);
         BindingHolder bindingHolder = new BindingHolder(listItemBinding.getRoot());
         bindingHolder.setBinding(listItemBinding);
-        bindingHolder.description.setMaxLines(4);
+        bindingHolder.description.setMaxLines(parent.getResources().getInteger(R.integer.non_detail_desc_max_line));
+        bindingHolder.description.setEllipsize(TextUtils.TruncateAt.END);
+        bindingHolder.subtitle.setMaxLines(parent.getResources().getInteger(R.integer.non_detail_subtitle_max_line));
+        bindingHolder.subtitle.setEllipsize(TextUtils.TruncateAt.END);
         return bindingHolder;
     }
 
@@ -77,7 +81,6 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
         String genreType = value.getGenreType();
         if (genreType != null) {
             List<Integer> genreList = value.getGenre_ids();
-//            String genreString = transferGenreListToString(genreList, allGenreJsonObject != null ? allGenreJsonObject : initializeGenreObject(holder.subtitle.getContext(), genreType));
             String genreString = transferGenreListToString(holder.subtitle.getContext(), genreType, genreList);
             holder.subtitle.setText(genreString);
         }
