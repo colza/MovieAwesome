@@ -17,7 +17,7 @@ import com.kun.movieisawesome.model.ModelGeneral;
  * Use the {@link DetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends MyFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -63,4 +63,8 @@ public class DetailFragment extends Fragment {
         super.onDetach();
     }
 
+    @Override
+    public String getTitle() {
+        return mModelGeneral.getShowTitle();
+    }
 }

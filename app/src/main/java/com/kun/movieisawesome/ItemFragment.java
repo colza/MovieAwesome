@@ -2,7 +2,6 @@ package com.kun.movieisawesome;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +11,9 @@ import android.view.ViewGroup;
 
 import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
+import com.kun.movieisawesome.model.ModelMovie;
+import com.kun.movieisawesome.model.ModelPeople;
+import com.kun.movieisawesome.model.ModelTV;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -34,7 +36,7 @@ import okhttp3.Response;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class ItemFragment<T> extends Fragment {
+public class ItemFragment<T> extends MyFragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_MODEL_CLASS_NAME = "modelClassName";
@@ -63,6 +65,7 @@ public class ItemFragment<T> extends Fragment {
     public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName, String reqUrl) {
         ItemFragment fragment = new ItemFragment<TA>();
         Bundle args = new Bundle();
+        fragment.mModelClassName = modelClassName;
         args.putString(ARG_MODEL_CLASS_NAME, modelClassName);
         args.putString(ARG_REQ_URL, reqUrl);
         fragment.setArguments(args);
@@ -185,5 +188,17 @@ public class ItemFragment<T> extends Fragment {
 
     public String getmModelClassName() {
         return mModelClassName;
+    }
+
+    @Override
+    public String getTitle() {
+        if( mModelClassName.equals(ModelMovie.class.getName()))
+            return "Popular Movie";
+        else if( mModelClassName.equals(ModelTV.class.getName()))
+            return "Popular TV";
+        else if( mModelClassName.equals(ModelPeople.class.getName()))
+            return "Popular Person";
+        else
+            return "";
     }
 }

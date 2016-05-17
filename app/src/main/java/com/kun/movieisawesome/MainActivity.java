@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
+                MyFragment myFragment = (MyFragment) getSupportFragmentManager().findFragmentById(R.id.main_content);
+                setTitle(myFragment.getTitle());
+
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true); // show back button
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -162,6 +165,7 @@ public class MainActivity extends AppCompatActivity
                     String requestUrl = ((ModelGeneral) object).getRequestPopularUrl();
                     ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment, "req").commit();
+                    setTitle(itemFragment.getTitle());
                 }
             }
         } catch (ClassNotFoundException e) {

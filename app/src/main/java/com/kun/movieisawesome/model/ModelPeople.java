@@ -264,4 +264,5 @@ public class ModelPeople extends ModelGeneral{
     public String getBackdrop_path() {
         return getProfile_path();
     }
+
 }

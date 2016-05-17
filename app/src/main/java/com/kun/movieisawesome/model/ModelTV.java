@@ -305,4 +305,5 @@ public class ModelTV extends ModelGeneral{
     public String getGenreType() {
         return Constants.PREF_TV_GENRE_LIST;
     }
+
 }
