@@ -203,10 +203,6 @@ public class ModelPeople extends ModelGeneral{
         this.profile_path = profile_path;
     }
 
-    @Override
-    public String getShowImage() {
-        return getProfile_path();
-    }
 
     @Override
     public String getShowTitle() {
@@ -257,5 +253,15 @@ public class ModelPeople extends ModelGeneral{
     @Override
     public String getGenreType() {
         return null;
+    }
+
+    @Override
+    public String getPoster_path() {
+        return getProfile_path();
+    }
+
+    @Override
+    public String getBackdrop_path() {
+        return getProfile_path();
     }
 }

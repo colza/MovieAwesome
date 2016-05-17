@@ -281,11 +281,6 @@ public class ModelMovie extends ModelGeneral{
     }
 
     @Override
-    public String getShowImage() {
-        return getPoster_path();
-    }
-
-    @Override
     public String getShowTitle() {
         return title;
     }

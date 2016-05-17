@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:bind="http://schemas.android.com/apk/res-auto"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        >
 
     <data>
         <import type="com.kun.movieisawesome.model.ModelGeneral"></import>
         <import type="com.kun.movieisawesome.model.ModelConfigImage"></import>
-        <import type="android.view.ViewGroup.LayoutParams"></import>
+        <import type="android.widget.RelativeLayout"></import>
         <variable
             name="modelGeneral"
             type="ModelGeneral"/>
-        <variable
-            name="isDetail"
-            type="Boolean"/>
 
         <variable
             name="modelConfigImage"
             type="ModelConfigImage"/>
+
+        <!-- Somehow we can't pass Boolean value to include layout. It will failed. As a result, use String as a workaround.-->
+        <variable
+            name="isDetail"
+            type="String"/>
     </data>
 
     <android.support.v7.widget.CardView
@@ -26,27 +28,21 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <ImageView
+            <include
                 android:id="@+id/poster"
-                android:background="@android:color/black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                app:imageUrl="@{modelConfigImage.base_url+modelConfigImage.poster_sizes.get(3)+modelGeneral.showImage}"
+                layout="@layout/image_content"
+                bind:modelGeneral="@{modelGeneral}"
+                bind:modelConfigImage="@{modelConfigImage}"
+                bind:isDetail="@{isDetail}"
                 />
-            <!--android:layout_width="@{isDetail ? match_parent : wrap_content}"-->
-            <!--android:layout_width="@{isDetail ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT}"-->
-            <!--android:tag="@{modelConfigImage.base_url+modelConfigImage.poster_sizes.get(3)+modelGeneral.showImage}"-->
             <include
                 layout="@layout/text_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                bind:modelGeneral="@{modelGeneral}"></include>
-            <!--android:layout_toRightOf="@{isDetail ? @+id/poster : 0}"-->
-            <!--android:layout_below="@{isDetail ? @+id/poster : 0}"-->
+                android:layout_toRightOf="@+id/poster"
+                bind:modelGeneral="@{modelGeneral}"
+                bind:isDetail="@{isDetail}"
+                ></include>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </layout>

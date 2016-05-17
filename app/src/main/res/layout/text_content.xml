@@ -9,19 +9,25 @@
         <variable
             name="modelGeneral"
             type="ModelGeneral"/>
+        <variable
+            name="isDetail"
+            type="String"/>
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="5dp">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="38dp"
-            android:layout_marginStart="38dp"
+            android:layout_toLeftOf="@+id/rating"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="@{modelGeneral.showTitle}"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -31,10 +37,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/title"
-            android:layout_toRightOf="@+id/title"
             android:text="@{modelGeneral.avgVote}"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{modelGeneral.avgVote == null ? View.INVISIBLE : View.VISIBLE}"/>
 
         <TextView
@@ -44,6 +48,9 @@
             android:layout_alignLeft="@+id/title"
             android:layout_alignStart="@+id/title"
             android:layout_below="@+id/title"
+            android:layout_toLeftOf="@+id/release_date"
+            android:maxLines="@integer/non_detail_max_line"
+            android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{modelGeneral.genreType == null ? View.INVISIBLE : View.VISIBLE}"/>
 
@@ -54,6 +61,7 @@
             android:layout_alignLeft="@+id/subtitle"
             android:layout_alignStart="@+id/subtitle"
             android:layout_below="@+id/subtitle"
+            android:paddingTop="10dp"
             android:text="@{modelGeneral.showDescription}"/>
 
         <TextView
@@ -64,8 +72,6 @@
             android:layout_alignTop="@+id/subtitle"
             android:layout_marginLeft="17dp"
             android:layout_marginStart="17dp"
-            android:layout_toEndOf="@+id/subtitle"
-            android:layout_toRightOf="@+id/subtitle"
             android:text="@{modelGeneral.showRelease}"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{modelGeneral.showRelease == null ? View.INVISIBLE : View.VISIBLE}"/>

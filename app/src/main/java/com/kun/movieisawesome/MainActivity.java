@@ -66,36 +66,11 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_CONFIG, new String[]{Constants.RESP_JSON_KEY_IMAGES}, Constants.PREF_CONFIG_IMAGE);
-        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_MOVIE_GENRE_LIST, null, Constants.PREF_MOVIE_GENRE_LIST);
-        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_TV_GENRE_LIST, null, Constants.PREF_TV_GENRE_LIST);
+        NetworkRequest.fetchGenreList(this, Constants.RESTFUL_GET_MOVIE_GENRE_LIST, Constants.PREF_MOVIE_GENRE_LIST);
+        NetworkRequest.fetchGenreList(this, Constants.RESTFUL_GET_TV_GENRE_LIST, Constants.PREF_TV_GENRE_LIST);
+//        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_MOVIE_GENRE_LIST, null, Constants.PREF_MOVIE_GENRE_LIST);
+//        fetchRemoteJsonAndSaveIntoPref(Constants.RESTFUL_GET_TV_GENRE_LIST, null, Constants.PREF_TV_GENRE_LIST);
     }
-
-//    private void checkUpdateConfigImage(){
-//        if( PreferenceManager.getDefaultSharedPreferences(this).contains(Constants.PREF_CONFIG_IMAGE))
-//            return;
-//
-//        String getConfig = Constants.BASE_URL + Constants.GET_CONFIG + "?" + Constants.ATTACH_API_KEY;
-//        Request request = new Request.Builder().url(getConfig).build();
-//
-//        NetworkRequest.instantiateClient().newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String result = response.body().string();
-//                try {
-//                    JSONObject jsonObject = new JSONObject(result);
-//                    String imageConfig = jsonObject.getJSONObject(Constants.RESP_JSON_KEY_IMAGES).toString();
-//                    PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString(Constants.PREF_CONFIG_IMAGE, imageConfig).commit();
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//    }
 
     private void fetchRemoteJsonAndSaveIntoPref(String reqUrl, final String[] childKeys, final String prefKey){
         if( PreferenceManager.getDefaultSharedPreferences(this).contains(prefKey))

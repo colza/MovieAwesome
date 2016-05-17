@@ -1,7 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+    >
 
-</LinearLayout>
+    <data>
+
+        <import type="com.kun.movieisawesome.model.ModelGeneral"></import>
+
+        <import type="com.kun.movieisawesome.model.ModelConfigImage"></import>
+
+        <import type="android.widget.RelativeLayout"></import>
+
+        <variable
+            name="modelGeneral"
+            type="ModelGeneral"/>
+
+        <variable
+            name="modelConfigImage"
+            type="ModelConfigImage"/>
+
+        <!-- Somehow we can't pass Boolean value to include layout. It will failed. As a result, use String as a workaround.-->
+        <variable
+            name="isDetail"
+            type="String"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/poster"
+            layout="@layout/image_content"
+            bind:isDetail="@{isDetail}"
+            bind:modelConfigImage="@{modelConfigImage}"
+            bind:modelGeneral="@{modelGeneral}"
+            />
+
+        <include
+            layout="@layout/text_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/poster"
+            bind:isDetail="@{isDetail}"
+            bind:modelGeneral="@{modelGeneral}"
+            ></include>
+
+    </RelativeLayout>
+</layout>
