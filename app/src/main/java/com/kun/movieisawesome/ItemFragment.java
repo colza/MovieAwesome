@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
 import com.kun.movieisawesome.model.ModelMovie;
 import com.kun.movieisawesome.model.ModelPeople;
@@ -50,7 +49,6 @@ public class ItemFragment<T> extends MyFragment {
 
     private OnListFragmentInteractionListener mListener;
     private OnLoadMoreListener mOnLoadMoreListener;
-    private ModelConfigImage modelConfigImage;
     private int page = 1;
 
     /**
@@ -109,9 +107,14 @@ public class ItemFragment<T> extends MyFragment {
             mRecyclerView = (RecyclerView) view;
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             mRecyclerView.setAdapter(new MyItemRecyclerViewAdapter(mListener, mOnLoadMoreListener));
-            fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl : "");
+            startFirstRequest();
         }
         return view;
+    }
+
+    public void startFirstRequest(){
+        ((MyItemRecyclerViewAdapter) mRecyclerView.getAdapter()).clearList();
+        fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl : "");
     }
 
     private void fetchRemoteDataUpdateView(String reqUrl){
@@ -131,12 +134,15 @@ public class ItemFragment<T> extends MyFragment {
                     JSONObject jsonObject = new JSONObject(result);
                     String contentString = jsonObject.getJSONArray(Constants.RESP_JSON_KEY_RESULTS).toString();
                     final List<T> list = transferJArrToList(contentString);
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((MyItemRecyclerViewAdapter) mRecyclerView.getAdapter()).attachCollections(list);
-                        }
-                    });
+                    if( getActivity() != null){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((MyItemRecyclerViewAdapter) mRecyclerView.getAdapter()).attachCollections(list);
+                            }
+                        });
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -200,5 +206,9 @@ public class ItemFragment<T> extends MyFragment {
             return "Popular Person";
         else
             return "";
+    }
+
+    public void setmReqUrl(String reqUrl) {
+        this.mReqUrl = reqUrl;
     }
 }

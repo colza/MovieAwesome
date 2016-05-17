@@ -117,7 +117,10 @@ public class MainActivity extends AppCompatActivity
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        searchView.setIconifiedByDefault(false);
         searchView.setSearchableInfo(searchableInfo);
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setQueryRefinementEnabled(true);
         return true;
     }
 
@@ -183,6 +186,7 @@ public class MainActivity extends AppCompatActivity
 
     private void handleIntent(Intent intent){
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+            
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.i("LOG","Search query = " + query);
 
@@ -194,9 +198,17 @@ public class MainActivity extends AppCompatActivity
                     if( modelClass != null ){
                         Object object = modelClass.newInstance();
                         if( object instanceof ModelGeneral) {
-                            String requestUrl = ((ModelGeneral) object).getSearchUrl();
+                            String requestUrl = ((ModelGeneral) object).getSearchUrl() + "&query=" + query;
+                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                             ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
-                            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment, "search").commit();
+                            Fragment searchFragment = getSupportFragmentManager().findFragmentByTag("search");
+                            if( searchFragment != null && searchFragment instanceof ItemFragment){
+                                ((ItemFragment) searchFragment).setmReqUrl(requestUrl);
+                                ((ItemFragment) searchFragment).startFirstRequest();
+                            }else{
+                                ft.addToBackStack("search");
+                                ft.add(R.id.main_content, itemFragment, "search").commit();
+                            }
                         }
                     }
                 } catch (ClassNotFoundException e) {
@@ -218,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onListFragmentInteraction(ModelGeneral modelGeneral) {
-        // launch detail fragment
+        // click on item in List, launch detail fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         DetailFragment detailFragment = DetailFragment.newInstance(modelGeneral);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
