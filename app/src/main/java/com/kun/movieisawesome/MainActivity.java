@@ -161,7 +161,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         ItemFragment itemFragment = ItemFragment.newInstance(className, "");
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment, Constants.TAG_FRAG_REQLIST).commit();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_content, itemFragment, Constants.TAG_FRAG_REQLIST).commit();
         setTitle(itemFragment.getTitle());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -201,6 +202,7 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         DetailFragment detailFragment = DetailFragment.newInstance(modelGeneral);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, 0, 0, R.anim.slide_out_to_left);
         transaction.addToBackStack(modelGeneral.getShowTitle());
         transaction.add(R.id.main_content, detailFragment).commit();
     }

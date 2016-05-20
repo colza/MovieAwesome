@@ -13,7 +13,7 @@ import java.util.Map;
 public class ModelPeople extends ModelGeneral{
     private Boolean adult;
     private List<Object> also_known_as = new ArrayList<Object>();
-    private String biography;
+    private String biography = null;
     private String birthday;
     private String deathday;
     private String homepage;
@@ -221,7 +221,7 @@ public class ModelPeople extends ModelGeneral{
 
     @Override
     public String getShowDescription() {
-        return null;
+        return biography;
     }
 
     @Override
@@ -264,5 +264,4 @@ public class ModelPeople extends ModelGeneral{
     public String getBackdrop_path() {
         return getProfile_path();
     }
-
 }

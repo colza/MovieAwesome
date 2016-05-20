@@ -42,13 +42,12 @@ public class BindingAdpaters {
 
     @BindingAdapter({"my_max_line"})
     public static void setMyMaxLine(View view, int line) {
-        if( view instanceof TextView){
+        if (view instanceof TextView) {
             TextView tv = (TextView) view;
             try {
                 tv.setMaxLines(line);
-                if( line == -1 )
-                    tv.setEllipsize(TextUtils.TruncateAt.END);
-            }catch (Exception e){
+                tv.setEllipsize(TextUtils.TruncateAt.END);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

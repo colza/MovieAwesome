@@ -68,7 +68,7 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
 
     // bind data through view holder
     @Override
-    public void onBindViewHolder(final BindingHolder holder, int position) {
+    public void onBindViewHolder(final BindingHolder holder, final int position) {
         final TM value = mValues.get(position);
         holder.getBinding().setModelGeneral(value);
         holder.getBinding().setModelConfigImage(MainActivity.getsModelConfigImage(holder.getBinding().getRoot().getContext()));
@@ -82,9 +82,10 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
             holder.subtitle.setText(genreString);
         }
 
-        if( value.getModelType().equals(ModelPeople.class.getName())){
+        if( value.getShowDescription() == null && value.getModelType().equals(ModelPeople.class.getName())){
             // send request to get biography
-            String reqUrl = Constants.BASE_URL + Constants.CATE_PERSON + value.getId() + Constants.ATTACH_API_KEY_AS_FIRST_PARAM;
+            final ModelPeople modelPeople = (ModelPeople) value;
+            String reqUrl = Constants.BASE_URL + Constants.CATE_PERSON + modelPeople.getId() + Constants.ATTACH_API_KEY_AS_FIRST_PARAM;
             NetworkRequest.instantiateClient().newCall(new Request.Builder().url(reqUrl).build()).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -100,7 +101,8 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                holder.description.setText(biography);
+                                modelPeople.setBiography(biography);
+                                notifyItemChanged(position);
                             }
                         });
 
@@ -171,7 +173,7 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
         // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastAnimatedPosition)
         {
-            Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.slide_in_from_left);
+            Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.scale_up);
             view.startAnimation(animation);
             lastAnimatedPosition = position;
         }

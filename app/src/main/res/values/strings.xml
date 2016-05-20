@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MovieIsAwesome</string>
+    <string name="app_name">MovieAwesome</string>
     <string name="search_hint">Keyword</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
