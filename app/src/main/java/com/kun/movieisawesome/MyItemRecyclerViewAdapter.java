@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +95,6 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
                 public void onResponse(Call call, Response response) throws IOException {
                     String responseStr = response.body().string();
                     try {
-                        Log.i("LOG","bio = " + responseStr);
                         JSONObject jsonObject = new JSONObject(responseStr);
                         final String biography = jsonObject.getString(Constants.KEY_JSON_BIO);
                         mHandler.post(new Runnable() {
