@@ -15,6 +15,7 @@ import com.kun.movieisawesome.ItemFragment.OnListFragmentInteractionListener;
 import com.kun.movieisawesome.databinding.ListItemBinding;
 import com.kun.movieisawesome.dummy.DummyContent.DummyItem;
 import com.kun.movieisawesome.model.ModelGeneral;
+import com.kun.movieisawesome.model.ModelPeople;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,15 +76,17 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
 
         runEnterAnimation(holder.getBinding().getRoot(), position);
 
-        holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mOnListFragmentInteractionListener.onListFragmentInteraction(value);
-            }
-        });
         if (position >= getItemCount() - 1) {
-            // load more data, return a list.
             mOnLoadMoreListener.loadMore();
+        }
+
+        if( !(value instanceof ModelPeople)) {
+            holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mOnListFragmentInteractionListener.onListFragmentInteraction(value);
+                }
+            });
         }
     }
 
