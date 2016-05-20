@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,13 +38,14 @@ public class ItemFragment<T> extends MyFragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_MODEL_CLASS_NAME = "modelClassName";
-    private static final String ARG_REQ_URL = "reqUrl";
+    private static final String ARG_QUERY = "query";
     // TODO: Customize parameters
     private RecyclerView mRecyclerView;
 
     private String mModelClassName;
     private Class<?> mModelClass;
     private String mReqUrl;
+    private String mQuery;
 
     private OnListFragmentInteractionListener mListener;
     private OnLoadMoreListener mOnLoadMoreListener;
@@ -60,11 +60,12 @@ public class ItemFragment<T> extends MyFragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName) {
+    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName, String query) {
         ItemFragment fragment = new ItemFragment<TA>();
         Bundle args = new Bundle();
         fragment.mModelClassName = modelClassName;
         args.putString(ARG_MODEL_CLASS_NAME, modelClassName);
+        args.putString(ARG_QUERY, query);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,7 +76,7 @@ public class ItemFragment<T> extends MyFragment {
 
         if (getArguments() != null) {
             mModelClassName = getArguments().getString(ARG_MODEL_CLASS_NAME);
-//            mReqUrl = getArguments().getString(ARG_REQ_URL);
+            mQuery = getArguments().getString(ARG_QUERY);
         }
 
         if( mModelClassName != null) {
@@ -89,8 +90,9 @@ public class ItemFragment<T> extends MyFragment {
         mOnLoadMoreListener = new OnLoadMoreListener() {
             @Override
             public void loadMore() {
-                Log.i("LOG","load more");
-                fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl + "&page=" + (++page): "");
+                fetchRemoteDataUpdateView(mReqUrl != null ?
+                        mReqUrl + Constants.ATTACH_API_KEY_AS_FIRST_PARAM +
+                                generateQueryParam() + "&page=" + (++page): "");
             }
         };
     }
@@ -113,7 +115,15 @@ public class ItemFragment<T> extends MyFragment {
 
     public void startFirstRequest(){
         ((MyItemRecyclerViewAdapter) mRecyclerView.getAdapter()).clearList();
-        fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl : "");
+        fetchRemoteDataUpdateView(mReqUrl != null ? mReqUrl + Constants.ATTACH_API_KEY_AS_FIRST_PARAM + generateQueryParam() : "");
+    }
+
+    private String generateQueryParam(){
+        if( mQuery != null && !mQuery.isEmpty()){
+            return "&query=" + mQuery;
+        }
+
+        return "";
     }
 
     private void fetchRemoteDataUpdateView(String reqUrl){
@@ -128,7 +138,6 @@ public class ItemFragment<T> extends MyFragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
-                Log.i("LOG","result = " + result);
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     String contentString = jsonObject.getJSONArray(Constants.RESP_JSON_KEY_RESULTS).toString();
@@ -195,16 +204,6 @@ public class ItemFragment<T> extends MyFragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(ModelGeneral modelGeneral);
     }
@@ -219,17 +218,19 @@ public class ItemFragment<T> extends MyFragment {
 
     @Override
     public String getTitle() {
+        String title = "";
         if( mModelClassName.equals(ModelMovie.class.getName()))
-            return "Popular Movie";
+            title = "Popular Movie";
         else if( mModelClassName.equals(ModelTV.class.getName()))
-            return "Popular TV";
+            title = "Popular TV";
         else if( mModelClassName.equals(ModelPeople.class.getName()))
-            return "Popular Person";
-        else
-            return "";
+            title =  "Popular Person";
+
+        return title + ((mQuery != null && !mQuery.isEmpty()) ? " with \"" + mQuery + "\"": "");
+
     }
 
-    public void setmReqUrl(String reqUrl) {
-        this.mReqUrl = reqUrl;
+    public void setmQuery(String mQuery) {
+        this.mQuery = mQuery;
     }
 }

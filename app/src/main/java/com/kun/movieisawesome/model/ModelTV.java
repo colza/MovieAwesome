@@ -278,7 +278,7 @@ public class ModelTV extends ModelGeneral{
 
     @Override
     public String getRequestPopularUrl() {
-        return Constants.BASE_URL + Constants.CATE_TV + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
+        return Constants.BASE_URL + Constants.CATE_TV + Constants.GET_POPULAR;
     }
 
     @Override
@@ -298,7 +298,7 @@ public class ModelTV extends ModelGeneral{
 
     @Override
     public String getSearchUrl() {
-        return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_TV + "?" + Constants.ATTACH_API_KEY;
+        return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_TV;
     }
 
     @Override

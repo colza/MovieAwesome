@@ -216,7 +216,7 @@ public class ModelPeople extends ModelGeneral{
 
     @Override
     public String getRequestPopularUrl() {
-        return Constants.BASE_URL + Constants.CATE_PERSON + Constants.GET_POPULAR + "?" + Constants.ATTACH_API_KEY;
+        return Constants.BASE_URL + Constants.CATE_PERSON + Constants.GET_POPULAR;
     }
 
     @Override
@@ -242,7 +242,7 @@ public class ModelPeople extends ModelGeneral{
 
     @Override
     public String getSearchUrl() {
-        return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_PERSON + "?" + Constants.ATTACH_API_KEY;
+        return Constants.BASE_URL + Constants.GET_SEARCH + Constants.CATE_PERSON ;
     }
 
     @Override

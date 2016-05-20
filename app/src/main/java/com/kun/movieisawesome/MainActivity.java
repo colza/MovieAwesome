@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -27,7 +28,7 @@ import com.squareup.moshi.Moshi;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ItemFragment.OnListFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ItemFragment.OnListFragmentInteractionListener, FragmentManager.OnBackStackChangedListener , MaterialSearchView.OnQueryTextListener {
     public static ModelConfigImage sModelConfigImage;
     private MaterialSearchView mSearchView;
     private Menu mMenu;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
 
         mSearchView = (MaterialSearchView) findViewById(R.id.search_view);
+        mSearchView.setOnQueryTextListener(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity
             className = ModelPeople.class.getName();
         }
 
-        ItemFragment itemFragment = ItemFragment.newInstance(className);
+        ItemFragment itemFragment = ItemFragment.newInstance(className, "");
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment, Constants.TAG_FRAG_REQLIST).commit();
         setTitle(itemFragment.getTitle());
 
@@ -164,56 +166,31 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    private void sendToSearch(){
-//
-//        Fragment searchFragment = getSupportFragmentManager().findFragmentByTag("search");
-//        if (searchFragment != null && searchFragment instanceof ItemFragment) {
-//            ((ItemFragment) searchFragment).setmReqUrl(requestUrl);
-//            ((ItemFragment) searchFragment).startFirstRequest();
-//        } else {
-//            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//            ft.addToBackStack("search");
-//            searchFragment = ItemFragment.newInstance(className, requestUrl);
-//            ft.add(R.id.main_content, searchFragment, "search").commit();
-//        }
-//    }
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Fragment myFragment = getSupportFragmentManager().findFragmentById(R.id.main_content);
+        if( myFragment instanceof ItemFragment){
+            ItemFragment currentItemFragment = (ItemFragment) myFragment;
+            if( currentItemFragment.getTag().equals(Constants.TAG_FRAG_SEARCH)){
+                // update search result
+                currentItemFragment.setmQuery(query);
+                currentItemFragment.startFirstRequest();
+            }
+            else{
+                // create a new search fragment
+                ItemFragment itemFragment = ItemFragment.newInstance(currentItemFragment.getmModelClassName(), query);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack(Constants.TAG_FRAG_SEARCH);
+                ft.add(R.id.main_content, itemFragment, Constants.TAG_FRAG_SEARCH).commit();
+            }
+        }
+        return false;
+    }
 
-//    private void handleIntent(Intent intent) {
-//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-//            String query = intent.getStringExtra(SearchManager.QUERY);
-//            Log.i("LOG", "Search query = " + query);
-//
-//            Fragment fragment = getSupportFragmentManager().findFragmentByTag("req");
-//            if (fragment instanceof ItemFragment) {
-//                String className = ((ItemFragment) fragment).getmModelClassName();
-//                try {
-//                    Class<?> modelClass = Class.forName(className);
-//                    if (modelClass != null) {
-//                        Object object = modelClass.newInstance();
-//                        if (object instanceof ModelGeneral) {
-//                            String requestUrl = ((ModelGeneral) object).getSearchUrl() + "&query=" + query;
-//                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//                            ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
-//                            Fragment searchFragment = getSupportFragmentManager().findFragmentByTag("search");
-//                            if (searchFragment != null && searchFragment instanceof ItemFragment) {
-//                                ((ItemFragment) searchFragment).setmReqUrl(requestUrl);
-//                                ((ItemFragment) searchFragment).startFirstRequest();
-//                            } else {
-//                                ft.addToBackStack("search");
-//                                ft.add(R.id.main_content, itemFragment, "search").commit();
-//                            }
-//                        }
-//                    }
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (InstantiationException e) {
-//                    e.printStackTrace();
-//                } catch (IllegalAccessException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
 
     @Override
     public void onListFragmentInteraction(ModelGeneral modelGeneral) {

@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.kun.movieisawesome.ItemFragment.OnListFragmentInteractionListener;
 import com.kun.movieisawesome.databinding.ListItemBinding;
-import com.kun.movieisawesome.dummy.DummyContent.DummyItem;
 import com.kun.movieisawesome.model.ModelGeneral;
 import com.kun.movieisawesome.model.ModelPeople;
 
@@ -21,11 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+
 public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends RecyclerView.Adapter<MyItemRecyclerViewAdapter<TM>.BindingHolder> {
     private final List<TM> mValues;
     private final OnListFragmentInteractionListener mOnListFragmentInteractionListener;
