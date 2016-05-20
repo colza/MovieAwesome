@@ -3,7 +3,6 @@ package com.kun.movieisawesome;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,7 +29,6 @@ public class BindingAdpaters {
     public static void setRelativeLayoutRule(View view, int rule) {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
         layoutParams.addRule(rule);
-        Log.i("LOG","rule = " + rule);
         view.setLayoutParams(layoutParams);
 
     }

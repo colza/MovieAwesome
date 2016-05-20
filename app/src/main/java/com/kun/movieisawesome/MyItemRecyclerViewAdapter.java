@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.kun.movieisawesome.ItemFragment.OnListFragmentInteractionListener;
@@ -39,8 +38,9 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
     }
 
     public void attachCollections(Collection<TM> collection) {
+        int currentPosition = getItemCount() == 0 ? 0 : getItemCount() - 1;
         mValues.addAll(collection);
-        notifyDataSetChanged();
+        notifyItemRangeChanged(currentPosition, collection.size());
     }
 
     public void clearList() {
@@ -101,15 +101,6 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
         return stringBuilder.toString();
     }
 
-    private void setAnimation(View viewToAnimate, int position) {
-        // If the bound view wasn't previously displayed on screen, it's animated
-        if (position > lastAnimatedPosition) {
-            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), R.anim.slide_in_from_bottom);
-            viewToAnimate.startAnimation(animation);
-            lastAnimatedPosition = position;
-        }
-    }
-
     @Override
     public int getItemCount() {
         return mValues.size();
@@ -135,14 +126,18 @@ public class MyItemRecyclerViewAdapter<TM extends ModelGeneral> extends Recycler
 
     private void runEnterAnimation(View view, int position) {
 
-        if (position > lastAnimatedPosition) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+        if (position > lastAnimatedPosition)
+        {
+            Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.slide_in_from_left);
+            view.startAnimation(animation);
             lastAnimatedPosition = position;
-            view.setTranslationY(Utils.getScreenHeight(view.getContext()));
-            view.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator(3.f))
-                    .setDuration(700)
-                    .start();
         }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(BindingHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.getBinding().getRoot().clearAnimation();
     }
 }

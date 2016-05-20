@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,6 +34,8 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ItemFragment.OnListFragmentInteractionListener{
     public static ModelConfigImage sModelConfigImage;
+    private SearchView mSearchView;
+    private MenuItem mSearchMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +44,14 @@ public class MainActivity extends AppCompatActivity
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     //show hamburger
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    mSearchView.setVisibility(View.VISIBLE);
                     toggle.syncState();
                     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                         @Override
@@ -95,9 +96,6 @@ public class MainActivity extends AppCompatActivity
         NetworkRequest.fetchGenreList(this, Constants.RESTFUL_GET_TV_GENRE_LIST, Constants.PREF_TV_GENRE_LIST);
     }
 
-
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -112,17 +110,36 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        mSearchMenuItem = menu.findItem(R.id.search);
 
         // set up search function
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-        searchView.setIconifiedByDefault(false);
-        searchView.setSearchableInfo(searchableInfo);
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setQueryRefinementEnabled(true);
+
+        mSearchView = (SearchView) mSearchMenuItem.getActionView();
+        mSearchView.setSearchableInfo(searchableInfo);
+        mSearchView.setIconifiedByDefault(false);
+        mSearchView.setSubmitButtonEnabled(true);
+        mSearchView.setQueryRefinementEnabled(true);
+
+        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchMenuItem.collapseActionView();
+            }
+        });
+
+        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                return false;
+            }
+        });
+
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -146,18 +163,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         String className = null;
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_movie) {
             className = ModelMovie.class.getName();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_tv) {
             className = ModelTV.class.getName();
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_people) {
             className = ModelPeople.class.getName();
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         try {
@@ -186,7 +197,6 @@ public class MainActivity extends AppCompatActivity
 
     private void handleIntent(Intent intent){
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-            
             String query = intent.getStringExtra(SearchManager.QUERY);
             Log.i("LOG","Search query = " + query);
 
@@ -236,6 +246,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.addToBackStack(modelGeneral.getShowTitle());
         transaction.add(R.id.main_content, detailFragment).commit();
+        mSearchView.setVisibility(View.GONE);
     }
 
     public static ModelConfigImage getsModelConfigImage(Context context) {
