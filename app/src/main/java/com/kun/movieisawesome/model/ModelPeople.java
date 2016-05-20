@@ -221,7 +221,7 @@ public class ModelPeople extends ModelGeneral{
 
     @Override
     public String getShowDescription() {
-        return getBiography();
+        return null;
     }
 
     @Override

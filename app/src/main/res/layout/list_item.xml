@@ -6,6 +6,7 @@
 
     <data>
         <import type="com.kun.movieisawesome.model.ModelGeneral"></import>
+        <import type="com.kun.movieisawesome.model.ModelPeople"></import>
         <import type="com.kun.movieisawesome.model.ModelConfigImage"></import>
         <import type="android.widget.RelativeLayout"></import>
         <variable
@@ -48,6 +49,7 @@
                 ></include>
             <include
                 layout="@layout/more_info"
+                android:visibility="@{modelGeneral.showRelease == null ? View.INVISIBLE : View.VISIBLE}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="5dp"

@@ -6,6 +6,7 @@ import java.util.List;
  * Created by TsaiKunYu on 15/05/16.
  */
 public abstract class ModelGeneral {
+    public abstract Integer getId();
     public abstract String getPoster_path();
     public abstract String getBackdrop_path();
     public abstract String getShowTitle();

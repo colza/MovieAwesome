@@ -16,6 +16,7 @@ public class Constants {
     public static final String GET_POPULAR = "popular/";
     public static final String GET_SEARCH = "search/";
     public static final String PARAM_QUERY = "query";
+    public static final String KEY_JSON_BIO = "biography";
 
     public static final String RESTFUL_GET_CONFIG = Constants.BASE_URL + Constants.GET_CONFIG + ATTACH_API_KEY_AS_FIRST_PARAM;
     public static final String RESTFUL_GET_MOVIE_GENRE_LIST = Constants.BASE_URL + Constants.GENRE + Constants.CATE_MOVIE + LIST + ATTACH_API_KEY_AS_FIRST_PARAM;
