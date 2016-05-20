@@ -1,7 +1,6 @@
 package com.kun.movieisawesome;
 
 import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,65 +18,43 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
 
 import com.kun.movieisawesome.model.ModelConfigImage;
 import com.kun.movieisawesome.model.ModelGeneral;
 import com.kun.movieisawesome.model.ModelMovie;
 import com.kun.movieisawesome.model.ModelPeople;
 import com.kun.movieisawesome.model.ModelTV;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ItemFragment.OnListFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, ItemFragment.OnListFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
     public static ModelConfigImage sModelConfigImage;
-    private SearchView mSearchView;
-    private MenuItem mSearchMenuItem;
+    private MaterialSearchView mSearchView;
+    private Menu mMenu;
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        mSearchView = (MaterialSearchView) findViewById(R.id.search_view);
 
-        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                MyFragment myFragment = (MyFragment) getSupportFragmentManager().findFragmentById(R.id.main_content);
-                setTitle(myFragment.getTitle());
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(mToggle);
+        mToggle.syncState();
 
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true); // show back button
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onBackPressed();
-                        }
-                    });
-                } else {
-                    //show hamburger
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                    mSearchView.setVisibility(View.VISIBLE);
-                    toggle.syncState();
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            drawer.openDrawer(GravityCompat.START);
-                        }
-                    });
-                }
-            }
-        });
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -88,50 +65,69 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackStackChanged() {
+        MyFragment myFragment = (MyFragment) getSupportFragmentManager().findFragmentById(R.id.main_content);
+        setTitle(myFragment.getTitle());
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            showToolbarBackButton(true);
+        }else{
+            showToolbarBackButton(false);
+        }
+
+        switchSearchToggle(myFragment);
+    }
+
+    private void switchSearchToggle(MyFragment myFragment){
+        if( myFragment instanceof DetailFragment){
+            updateOptionMenu().findItem(R.id.search).setVisible(false);
+        }else{
+            updateOptionMenu().findItem(R.id.search).setVisible(true);
+        }
+    }
+
+    private void showToolbarBackButton(Boolean bool){
+        if( bool ){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // show back button
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+        }else{
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mToggle.syncState();
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                }
+            });
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (mSearchView.isSearchOpen()) {
+            mSearchView.closeSearch();
         } else {
             super.onBackPressed();
         }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        mSearchMenuItem = menu.findItem(R.id.search);
-
-        // set up search function
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-
-        mSearchView = (SearchView) mSearchMenuItem.getActionView();
-        mSearchView.setSearchableInfo(searchableInfo);
-        mSearchView.setIconifiedByDefault(false);
-        mSearchView.setSubmitButtonEnabled(true);
-        mSearchView.setQueryRefinementEnabled(true);
-
-        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("LOG","search click ");
-                mSearchMenuItem.collapseActionView();
-            }
-        });
-
-        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                Log.i("LOG","close");
-                return false;
-            }
-        });
-
+        mMenu = menu;
+        MenuItem item = menu.findItem(R.id.search);
+        mSearchView.setMenuItem(item);
         return true;
     }
-
 
 
     @Override
@@ -165,9 +161,9 @@ public class MainActivity extends AppCompatActivity
 
         try {
             Class<?> modelClass = Class.forName(className);
-            if( modelClass != null ){
+            if (modelClass != null) {
                 Object object = modelClass.newInstance();
-                if( object instanceof ModelGeneral) {
+                if (object instanceof ModelGeneral) {
                     String requestUrl = ((ModelGeneral) object).getRequestPopularUrl();
                     ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_content, itemFragment, "req").commit();
@@ -176,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }catch (InstantiationException e) {
+        } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -187,27 +183,27 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void handleIntent(Intent intent){
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.i("LOG","Search query = " + query);
+            Log.i("LOG", "Search query = " + query);
 
             Fragment fragment = getSupportFragmentManager().findFragmentByTag("req");
-            if( fragment instanceof ItemFragment){
-                String className = ((ItemFragment)fragment).getmModelClassName();
+            if (fragment instanceof ItemFragment) {
+                String className = ((ItemFragment) fragment).getmModelClassName();
                 try {
                     Class<?> modelClass = Class.forName(className);
-                    if( modelClass != null ){
+                    if (modelClass != null) {
                         Object object = modelClass.newInstance();
-                        if( object instanceof ModelGeneral) {
+                        if (object instanceof ModelGeneral) {
                             String requestUrl = ((ModelGeneral) object).getSearchUrl() + "&query=" + query;
                             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                             ItemFragment itemFragment = ItemFragment.newInstance(className, requestUrl);
                             Fragment searchFragment = getSupportFragmentManager().findFragmentByTag("search");
-                            if( searchFragment != null && searchFragment instanceof ItemFragment){
+                            if (searchFragment != null && searchFragment instanceof ItemFragment) {
                                 ((ItemFragment) searchFragment).setmReqUrl(requestUrl);
                                 ((ItemFragment) searchFragment).startFirstRequest();
-                            }else{
+                            } else {
                                 ft.addToBackStack("search");
                                 ft.add(R.id.main_content, itemFragment, "search").commit();
                             }
@@ -215,7 +211,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                }catch (InstantiationException e) {
+                } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -238,13 +234,19 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.addToBackStack(modelGeneral.getShowTitle());
         transaction.add(R.id.main_content, detailFragment).commit();
-        mSearchView.setVisibility(View.GONE);
+    }
+
+    private Menu updateOptionMenu(){
+        if( mMenu == null)
+            onPrepareOptionsMenu(mMenu);
+
+        return mMenu;
     }
 
     public static ModelConfigImage getsModelConfigImage(Context context) {
-        if( sModelConfigImage == null){
+        if (sModelConfigImage == null) {
             String configImage = PreferenceManager.getDefaultSharedPreferences(context).getString(Constants.PREF_CONFIG_IMAGE, null);
-            if( configImage != null ){
+            if (configImage != null) {
                 Moshi moshi = new Moshi.Builder().build();
                 JsonAdapter<ModelConfigImage> jsonAdapter = moshi.adapter(ModelConfigImage.class);
                 try {
