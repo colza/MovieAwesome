@@ -60,12 +60,11 @@ public class ItemFragment<T> extends MyFragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName, String reqUrl) {
+    public static <TA extends ModelGeneral> ItemFragment newInstance(String modelClassName) {
         ItemFragment fragment = new ItemFragment<TA>();
         Bundle args = new Bundle();
         fragment.mModelClassName = modelClassName;
         args.putString(ARG_MODEL_CLASS_NAME, modelClassName);
-        args.putString(ARG_REQ_URL, reqUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,7 +75,7 @@ public class ItemFragment<T> extends MyFragment {
 
         if (getArguments() != null) {
             mModelClassName = getArguments().getString(ARG_MODEL_CLASS_NAME);
-            mReqUrl = getArguments().getString(ARG_REQ_URL);
+//            mReqUrl = getArguments().getString(ARG_REQ_URL);
         }
 
         if( mModelClassName != null) {
@@ -160,6 +159,28 @@ public class ItemFragment<T> extends MyFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        try {
+            String fragmentTag = getTag();
+            Class<?> modelClass = Class.forName(mModelClassName);
+            if (modelClass != null) {
+                Object object = modelClass.newInstance();
+                if (object instanceof ModelGeneral) {
+                    if (fragmentTag.equals(Constants.TAG_FRAG_REQLIST)) {
+                        mReqUrl = ((ModelGeneral) object).getRequestPopularUrl();
+                    } else if (fragmentTag.equals(Constants.TAG_FRAG_SEARCH)) {
+                        mReqUrl = ((ModelGeneral) object).getSearchUrl();
+                    }
+                }
+            }
+        }catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (java.lang.InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
         if (context instanceof OnListFragmentInteractionListener) {
             mListener = (OnListFragmentInteractionListener) context;
         } else {
